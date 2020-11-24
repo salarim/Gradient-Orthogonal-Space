@@ -5,7 +5,7 @@
 #SBATCH --job-name=Orthogonal
 #SBATCH --output=%x-%j.out
 #SBATCH --nodes=1
-#SBATCH --time=00:59:00
+#SBATCH --time=11:59:00
 #SBATCH --mem=100G
 #SBATCH --gres=gpu:v100l:4
 
@@ -19,9 +19,9 @@ source venv/bin/activate
 pip install --no-index --upgrade pip
 pip install --no-index -r requirements.txt
 
-# python main.py
-python validate_null_space.py
+python main.py
+# python validate_null_space.py
 
 
-# cp null_space.npy ~/scratch/Orthogonal
-# cp model.pt ~/scratch/Orthogonal
+cp null_space.npy ~/scratch/Orthogonal
+cp model.pt ~/scratch/Orthogonal

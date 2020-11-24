@@ -144,7 +144,7 @@ def main():
     testloader = torch.utils.data.DataLoader(testset, batch_size=1000,
                                          shuffle=False, num_workers=1)
 
-    EPOCHS = 10
+    EPOCHS = 300
     VAL_FREQ = 1
 
     model = Net()

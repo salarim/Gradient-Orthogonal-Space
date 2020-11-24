@@ -12,7 +12,7 @@ def main():
 
     shapes = [[100, 784], [100], [100, 100], [100], [10, 100], [10]]
     nb_params = 89610
-    step_sizes = [1.0, 0.01, 0.001]
+    step_sizes = [10.0, 3.0, 1.0]
 
     null_spaces = np.load('outputs/null_space_bs10.npy').T
 
@@ -25,7 +25,7 @@ def main():
                                     transforms.Normalize((0.5), (0.5))])
     trainset = torchvision.datasets.MNIST(root='./data', train=True,
                                             download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=128,
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=1000,
                                             shuffle=True, num_workers=1)
 
     testset = torchvision.datasets.MNIST(root='./data', train=False,
@@ -34,10 +34,13 @@ def main():
                                             shuffle=False, num_workers=1)
 
 
-    for step_size in step_sizes:
-        print('Step Size:', step_size)
-        for j, null_space in enumerate(null_spaces):
-            print('Null Space index:', j)
+    for j, null_space in enumerate(null_spaces):
+        print('### Null Space index:', j)
+        null_space = null_space / np.linalg.norm(null_space)
+
+        for step_size in step_sizes:
+            print('Step Size:', step_size)
+
             model2= deepcopy(model)
             idx = 0
             cum_idx = 0
@@ -53,7 +56,7 @@ def main():
                 cum_idx += size
             
             validate(model2, trainloader, criterion)
-            validate(model2, testloader, criterion)
+            # validate(model2, testloader, criterion)
             print()
 
 
