@@ -12,12 +12,12 @@ def main():
 
     shapes = [[100, 784], [100], [100, 100], [100], [10, 100], [10]]
     nb_params = 89610
-    step_sizes = [10.0, 3.0, 1.0]
+    step_sizes = [20.0, 10.0]
 
-    null_spaces = np.load('outputs/null_space_bs10.npy').T
+    null_spaces = np.load('outputs/null_space_bs10_e300.npy').T
 
     model = Net()
-    model.load_state_dict(torch.load('outputs/model_bs10.pt', map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load('outputs/model_bs10_e300.pt', map_location=torch.device('cpu')))
     criterion = torch.nn.CrossEntropyLoss()
     model, criterion = model.cuda(), criterion.cuda()
 
@@ -25,14 +25,17 @@ def main():
                                     transforms.Normalize((0.5), (0.5))])
     trainset = torchvision.datasets.MNIST(root='./data', train=True,
                                             download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=1000,
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=50000,
                                             shuffle=True, num_workers=1)
 
     testset = torchvision.datasets.MNIST(root='./data', train=False,
                                         download=True, transform=transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=1000,
+    testloader = torch.utils.data.DataLoader(testset, batch_size=10000,
                                             shuffle=False, num_workers=1)
 
+
+    idx = np.random.randint(null_spaces.shape[0], size=200)
+    null_spaces = null_spaces[idx,:]
 
     for j, null_space in enumerate(null_spaces):
         print('### Null Space index:', j)
