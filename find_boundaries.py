@@ -217,9 +217,9 @@ def main():
             it += 1
 
         upper_accs.append(upper_acc)
-        print(i, upper_acc)
         boundary = find_boundary(w0, direction, [data], 0.0, upper_dis, boundary_acc)
         boundaries.append(boundary)
+        print('{} \t {:.3f} \t {:.3f}'.format(i, upper_acc, boundary))
 
     boundaries = np.array(boundaries)
     upper_accs = np.array(upper_accs)
