@@ -200,26 +200,27 @@ def main():
     boundary_acc = 99.9
     upper_dis = 1e5
 
-    for i in range(89610):
-        direction = np.zeros(89610)
-        direction[i] = 1.0
+    for sign in [1.0, -1.0]:
+        for i in range(89610):
+            direction = np.zeros(89610)
+            direction[i] = sign
 
-        upper_acc = 100.0
-        it = 0
-        while upper_acc > boundary_acc and it < 10:
-            try:
-                data = next(dataloader_iterator)
-            except StopIteration:
-                dataloader_iterator = iter(trainloader)
-                data = next(dataloader_iterator)
+            upper_acc = 100.0
+            it = 0
+            while upper_acc > boundary_acc and it < 10:
+                try:
+                    data = next(dataloader_iterator)
+                except StopIteration:
+                    dataloader_iterator = iter(trainloader)
+                    data = next(dataloader_iterator)
 
-            upper_acc = validate_direction(w0, direction, [data], upper_dis)
-            it += 1
+                upper_acc = validate_direction(w0, direction, [data], upper_dis)
+                it += 1
 
-        upper_accs.append(upper_acc)
-        boundary = find_boundary(w0, direction, [data], 0.0, upper_dis, boundary_acc)
-        boundaries.append(boundary)
-        print('{} \t {:.3f} \t {:.3f}'.format(i, upper_acc, boundary))
+            upper_accs.append(upper_acc)
+            boundary = find_boundary(w0, direction, [data], 0.0, upper_dis, boundary_acc)
+            boundaries.append(boundary)
+            print('{}  {} \t {:.3f} \t {:.3f}'.format(sign, i, upper_acc, boundary))
 
     boundaries = np.array(boundaries)
     upper_accs = np.array(upper_accs)
