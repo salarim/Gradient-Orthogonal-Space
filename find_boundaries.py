@@ -181,13 +181,13 @@ def main():
 
     trainset = torchvision.datasets.MNIST(root='./data', train=True,
                                             download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=1024,
-                                            shuffle=True, num_workers=1, drop_last=True)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=60000,
+                                            shuffle=True, num_workers=1)
 
 
     testset = torchvision.datasets.MNIST(root='./data', train=False,
                                         download=True, transform=transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=1024,
+    testloader = torch.utils.data.DataLoader(testset, batch_size=10000,
                                             shuffle=False, num_workers=1)
 
     model1 = Net().cuda()
@@ -199,29 +199,20 @@ def main():
     upper_accs = []
     boundary_acc = 99.9
     upper_dis = 1e2
+    
+    data = next(iter(trainloader))
 
     for sign in [1.0, -1.0]:
         for i in range(89610):
             direction = np.zeros(89610)
             direction[i] = sign
 
-            upper_acc = 100.0
-            lower_acc = 0.0
-            it = 0
-            while upper_acc > boundary_acc and lower_acc < boundary_acc and it < 10:
-                try:
-                    data = next(dataloader_iterator)
-                except StopIteration:
-                    dataloader_iterator = iter(trainloader)
-                    data = next(dataloader_iterator)
-
-                upper_acc = validate_direction(w0, direction, [data], upper_dis)
-                lower_acc = validate_direction(w0, direction, [data], 0.0)
-                it += 1
-
+            upper_acc = validate_direction(w0, direction, [data], upper_dis)
             upper_accs.append(upper_acc)
+            
             boundary = find_boundary(w0, direction, [data], 0.0, upper_dis, boundary_acc)
             boundaries.append(boundary)
+            
             print('{}  {} \t {:.3f} \t {:.3f}'.format(sign, i, upper_acc, boundary))
 
     boundaries = np.array(boundaries)
